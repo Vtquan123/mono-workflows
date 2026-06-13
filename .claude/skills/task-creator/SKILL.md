@@ -367,72 +367,14 @@ Should I include this deletion in the task? (yes / no / rename instead)
 
 ## Anti-Pattern Prevention
 
-Run this checklist before writing any task file. Flag and fix violations.
+Full catalogue: [docs/anti-patterns.md](docs/anti-patterns.md) — single source of truth.
 
-See `docs/anti-patterns.md` for the full catalogue. Critical rules:
-
-**ANTI-001 — Cross-domain task**: Files from ≥2 concern types in one task.
-→ Split by concern.
-
-**ANTI-002 — God task**: >5 allowed files.
-→ Split by HTTP method, CRUD method group, or component.
-
-**ANTI-003 — Vague objective**: Uses "refactor", "improve", "handle", "etc."
-→ Name exact exports, signatures, field names.
-
-**ANTI-004 — Missing file scope**: Allowed Files is empty or says "any relevant files".
-→ List exact paths. Use `[TBD: dep TASK-NNN]` only with an explicit dependency.
-
-**ANTI-005 — Implicit dependency**: Task imports from a file produced by another
-task not listed in Dependencies.
-→ Audit every import in Requirements; add missing deps.
-
-**ANTI-006 — Non-verifiable criteria**: "works correctly", "looks good".
-→ Every criterion must be a runnable command or specific assertion.
-
-**ANTI-007 — Architecture drift**: Requirements say "choose appropriate pattern",
-"use best practices", "feel free to add".
-→ Prescribe the exact pattern, class name, error type.
-
-**ANTI-008 — Missing context update**: Context Update section is empty.
-→ Every task must contain the verbatim append block for `context.md`.
-
-**ANTI-UI-001 — Raw value in UI task**: Requirements use hard-coded colors, sizes,
-or other raw design values instead of design system tokens.
-→ Replace with the token names defined in your stack (see `.ai/architecture.md § Stack Rules`).
-
-**ANTI-UI-002 — Wrong primitive library**: Requirements reference a UI primitive
-library not approved by the project stack.
-→ Replace with the approved UI primitive library (see `.ai/architecture.md § Stack Rules`).
-
-**ANTI-UI-003 — Missing class merging utility**: UI task has no mention of the
-approved class merging utility.
-→ Add the class merging utility requirement per `.ai/architecture.md § Stack Rules`.
-
-**ANTI-DAG-001 — Missing dependency metadata**: Task file lacks the
-`## Dependency Metadata` block, or fields (`depends_on`, `parallel_group`,
-`blocked_by`, `parallelizable`) are absent.
-→ Emit the full metadata block per `docs/task-format.md § Dependency Metadata`.
-
-**ANTI-DAG-002 — Unsafe parallel claim**: A task marked `parallelizable: true`
-shares Allowed Files with another task in the same `parallel_group`, or has
-a non-empty `resource_conflicts` list.
-→ Set `parallelizable: false`, populate `resource_conflicts`, OR split files.
-
-**ANTI-DAG-003 — Over-serialization**: Two tasks with no shared files, no
-shared state, and no import relationship are placed in a hard dependency
-chain.
-→ Demote the edge to `soft_deps` (or `none`) and place both tasks in the
-same wave.
-
-**ANTI-DAG-004 — Implicit resource conflict**: Two tasks modify the same
-file, registry, or migration target but neither lists the other in
-`resource_conflicts`.
-→ Run Phase 2.5 again; populate `resource_conflicts` on both sides.
-
-**ANTI-DAG-005 — Missing critical path**: No task in the story has
-`critical_path: true`.
-→ Compute the longest hard-dependency chain; flag every task on it.
+Critical subset (highest severity — full list in docs/anti-patterns.md):
+- **ANTI-001** — Cross-domain task: files from ≥2 concern types in one task → split by concern
+- **ANTI-002** — God task: >5 allowed files → split by method group or component
+- **ANTI-005** — Implicit dependency: upstream import not listed in Dependencies → audit every import
+- **ANTI-008** — Missing context update: Context Update section empty → every task needs verbatim append block
+- **ANTI-DAG-001** — Missing dependency metadata: task file lacks `## Dependency Metadata` block → emit per docs/task-format.md
 
 ---
 

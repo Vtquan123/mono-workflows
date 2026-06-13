@@ -289,6 +289,71 @@ N. Use the class merging utility specified in `.ai/architecture.md § Stack Rule
 
 ---
 
+## ANTI-DAG-001 — Missing Dependency Metadata
+
+**Description**: A task file lacks the `## Dependency Metadata` block, or required fields
+(`depends_on`, `parallel_group`, `blocked_by`, `parallelizable`) are absent.
+
+**Detection signal**: Task file has no `## Dependency Metadata` section, or one or more
+fields from the required set are missing.
+
+**Correction**: Emit the full metadata block per `docs/task-format.md § Dependency Metadata`.
+Every task must include all required fields, even if their value is `[]` or `false`.
+
+---
+
+## ANTI-DAG-002 — Unsafe Parallel Claim
+
+**Description**: A task marked `parallelizable: true` shares Allowed Files with another
+task in the same `parallel_group`, or has a non-empty `resource_conflicts` list.
+
+**Detection signal**: Two tasks in the same `parallel_group` share at least one path in
+their Allowed Files lists, or a task has `parallelizable: true` alongside a non-empty
+`resource_conflicts`.
+
+**Correction**: Set `parallelizable: false`, populate `resource_conflicts` on both tasks,
+OR split files between tasks so no path is shared.
+
+---
+
+## ANTI-DAG-003 — Over-Serialization
+
+**Description**: Two tasks with no shared files, no shared state, and no import relationship
+are placed in a hard dependency chain, artificially sequentializing work that could run in
+parallel.
+
+**Detection signal**: `depends_on` contains a task ID but no file produced by that task
+appears in the dependent task's Allowed Files or Requirements.
+
+**Correction**: Demote the edge to `soft_deps` (or remove it) and place both tasks in the
+same parallel wave.
+
+---
+
+## ANTI-DAG-004 — Implicit Resource Conflict
+
+**Description**: Two tasks modify the same file, registry, or migration target but neither
+lists the other in `resource_conflicts`.
+
+**Detection signal**: Phase 2.5 conflict detection finds a shared path between two tasks
+that are not linked by a hard dependency or a `resource_conflicts` entry.
+
+**Correction**: Run Phase 2.5 again; populate `resource_conflicts` on both tasks.
+
+---
+
+## ANTI-DAG-005 — Missing Critical Path
+
+**Description**: No task in the story has `critical_path: true`, making it impossible to
+prioritize execution or detect schedule risk.
+
+**Detection signal**: A completed DAG has zero tasks with `critical_path: true`.
+
+**Correction**: Compute the longest hard-dependency chain in the graph; flag every task on
+that chain with `critical_path: true`.
+
+---
+
 ## Quick Reference — Red-Flag Phrase Blocklist
 
 Ban these from ALL task sections. If found → rewrite or split:

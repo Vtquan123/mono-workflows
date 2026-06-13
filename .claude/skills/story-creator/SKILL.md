@@ -284,42 +284,14 @@ Use those patterns to populate the `## Affected Areas` section of every story.
 
 ## Anti-Pattern Prevention
 
-Run this checklist before writing any story file. Flag and fix violations.
+Full catalogue: [docs/anti-patterns.md](docs/anti-patterns.md) — single source of truth.
 
-See `docs/anti-patterns.md` for the full catalogue.
-
-**SANTI-001 — Giant story**: Story decomposes into > 7 tasks.
-→ Split by layer: data layer story + UI story.
-
-**SANTI-002 — Vague goal**: Goal uses "improve", "enhance", "refactor", "handle X better".
-→ Rewrite as a user-observable outcome: "User can create an `<entity>` with a title and body."
-
-**SANTI-003 — Cross-domain refactor**: Story touches 2+ primary entities' data layers.
-→ One story per primary entity. Shared concerns go in a dedicated utility story.
-
-**SANTI-004 — Hidden dependency**: Story claims no upstream dependencies but references
-types/models from another story that hasn't been written yet.
-→ List the upstream story in Dependencies. Set execution order accordingly.
-
-**SANTI-005 — Architecture drift**: Technical Decisions section defers choices to executor
-("use whichever pattern fits", "choose the best approach").
-→ Every architectural decision MUST be made in the story by the planner.
-
-**SANTI-006 — Unconstrained executor scope**: Affected Areas is vague ("all related files").
-→ List exact file paths. Use `[TBD: determined by STORY-NNN]` only with explicit dependency.
-
-**SANTI-007 — Global context explosion**: Story's context.md grows unbounded because
-executor appends raw diffs instead of structured decisions.
-→ Enforce the context.md append schema (see templates/context.md).
-
-**SANTI-008 — Missing acceptance criteria**: Story has no story-level criteria.
-→ Every story needs ≥ 3 acceptance criteria verifiable via the build command or curl.
-
-**SANTI-009 — Premature UI**: Story includes UI tasks before its data layer story is complete.
-→ UI stories MUST list the data layer story as a dependency.
-
-**SANTI-010 — Auth/validation coupling**: Auth or validation logic is embedded in a domain story.
-→ Auth and shared validators are always isolated stories or tasks.
+Critical subset (highest severity — full list in docs/anti-patterns.md):
+- **SANTI-001** — Giant story: >7 tasks → split by layer (data story + UI story)
+- **SANTI-002** — Vague goal: uses "improve/refactor/enhance" → rewrite as user-observable outcome
+- **SANTI-005** — Architecture drift: deferred choices in Technical Decisions → planner decides all patterns
+- **SANTI-008** — Missing acceptance criteria: no story-level criteria → ≥3 mechanically verifiable criteria
+- **SANTI-009** — Premature UI: UI tasks before data layer story complete → add data layer story as dependency
 
 ---
 

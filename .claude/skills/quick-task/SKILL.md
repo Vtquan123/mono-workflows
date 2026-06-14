@@ -226,6 +226,21 @@ turns out to be bigger than it looked.
 
 ---
 
+## Token Budget
+
+Shared rules: [.ai/token-budget.md](../../../.ai/token-budget.md).
+
+- Default output: compact task plan and result summary.
+- Target planning output: ≤ 150 words.
+- Target final summary: ≤ 10 lines.
+- Do not generate a full story or task DAG.
+- Do not read or restate unrelated architecture context.
+- Include only changed files, key decisions, and validation status.
+- Use verbose output only when blocked or when the user asks for details.
+- Load `docs/examples.md` only when unsure a request qualifies.
+
+---
+
 ## Supporting Docs
 
 - `docs/examples.md` — good fits and anti-patterns (load when unsure if a request qualifies)

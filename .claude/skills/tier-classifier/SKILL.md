@@ -97,6 +97,19 @@ Stop. The caller decides what to do next. See `docs/examples.md` for scored outp
 
 ---
 
+## Token Budget
+
+Shared rules: [.ai/token-budget.md](../../../.ai/token-budget.md).
+
+- Default output: concise tier decision.
+- Target: ≤ 120 words or ≤ 10 lines.
+- Include only the selected tier, short rationale, and recommended next workflow.
+- Do not paste the full tier table from `.ai/planning-tiers.md`; reference it for canonical thresholds.
+- Use expanded reasoning only when classification is borderline or disputed.
+- Load `docs/examples.md` only when a score is close to a tier boundary.
+
+---
+
 ## Supporting Docs
 
 - `docs/examples.md` — trivial / medium / large / epic output examples with scores

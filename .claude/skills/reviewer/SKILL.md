@@ -137,6 +137,20 @@ Once the report is emitted, the reviewer's job is done.
 
 ---
 
+## Token Budget
+
+Shared rules: [.ai/token-budget.md](../../../.ai/token-budget.md).
+
+- Default output: severity-grouped report only, one line per finding.
+- Target: ≤ 150 words plus the findings list; skip a finding entirely if there is nothing to flag.
+- Review only the changed files/diff — do not restate unchanged code.
+- Do not paste the full output template into chat; use `templates/review-report.md`.
+- One concise line per finding: location, problem, fix. No praise, no summaries of correct code.
+- Load `docs/**` and `examples/**` only when calibrating a borderline severity call.
+- Use verbose output only to explain a correctness or safety issue that must be justified.
+
+---
+
 ## Supporting Docs
 
 - `docs/review-workflow.md` — phase commands, analysis axes, token strategy, best practices

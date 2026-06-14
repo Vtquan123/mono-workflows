@@ -137,6 +137,20 @@ A mode switch mid-flight is expected and healthy — the gate self-corrects.
 
 ---
 
+## Token Budget
+
+Shared rules: [.ai/token-budget.md](../../../.ai/token-budget.md).
+
+- Default output: one concise clarification question, or one concise routing decision.
+- Target: ≤ 80 words for normal routing.
+- Do not explain all workflow modes unless the user asks.
+- Do not create planning artifacts during intent verification.
+- If the request is clear, return the selected route and next action in ≤ 5 lines.
+- If ambiguous, ask only the minimum question needed to unblock routing.
+- Load `docs/examples.md` only when a routing call is genuinely unclear.
+
+---
+
 ## Supporting Docs
 
 - `docs/examples.md` — routing examples and anti-patterns (load when needed)

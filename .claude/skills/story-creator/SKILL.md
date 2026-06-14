@@ -220,6 +220,21 @@ Load `docs/checklist.md` and verify all items before writing any story file.
 
 ---
 
+## Token Budget
+
+Shared rules: [.ai/token-budget.md](../../../.ai/token-budget.md).
+
+- Default chat summary: ≤ 250 words.
+- Story artifact should be concise and structured.
+- Target slim story: ≤ 80 lines.
+- Target full story: ≤ 180 lines unless explicitly complex.
+- Do not paste long examples into chat.
+- Use templates from `templates/` instead of embedding full templates in `SKILL.md` or chat.
+- Load `docs/**` only when needed for the current artifact step.
+- Put details in story files, not in conversational output.
+
+---
+
 ## Reference Files
 
 - [docs/planning-tiers.md](docs/planning-tiers.md) — tier branches: Quick Task, Slim Story, Full Story, Epic

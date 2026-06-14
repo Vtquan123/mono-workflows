@@ -224,6 +224,20 @@ Load `docs/checklist.md` and verify all items before writing any task file.
 
 ---
 
+## Token Budget
+
+Shared rules: [.ai/token-budget.md](../../../.ai/token-budget.md).
+
+- Default chat summary: ≤ 250 words.
+- Target task file length: ≤ 120 lines per task.
+- Target task requirement section: ≤ 250 words per task.
+- Keep each task focused on one concern.
+- Do not paste the full DAG explanation into chat; output the task index and parallel waves concisely.
+- Load `docs/dependency-graph.md` only when generating or validating task dependencies.
+- Load anti-pattern / checklist docs only during final validation.
+
+---
+
 ## Reference Files
 
 - [docs/task-format.md](docs/task-format.md) — canonical template + field rules + file creation/deletion rules

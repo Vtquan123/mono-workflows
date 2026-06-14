@@ -148,4 +148,4 @@ Once the report is emitted, the reviewer's job is done.
 
 ## Reference Files
 
-- [CLAUDE.md](../../../CLAUDE.md) — architect-planner role and Direct Execution Exception
+- [.ai/architecture.md](../../../.ai/architecture.md) — architect-planner role and Direct Execution Exception (§ Roles & Boundaries)

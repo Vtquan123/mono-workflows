@@ -9,6 +9,36 @@
 
 ---
 
+## Roles & Boundaries
+
+Single source of truth for the two-agent role separation. CLAUDE.md, skill
+files, and `.clinerules/` reference this section — do not restate the rules
+elsewhere.
+
+| Role | Tool | Responsibilities | Writes to |
+|---|---|---|---|
+| **Architect-Planner** | Claude Code | Stories, tasks, architecture decisions, task orchestration | `.ai/**` only |
+| **Executor** | Cline | Task implementation, context updates, bounded file writes | Only files in the active task's `Allowed Files` |
+
+**Invariants (non-negotiable):**
+
+- Claude Code NEVER writes production source code — it defines what Cline writes.
+- Claude Code writes ONLY under `.ai/**` (stories, tasks, quick-tasks, epics, context).
+- Cline writes ONLY to files listed in the active task's `Allowed Files`.
+- Cline NEVER makes architecture decisions — it appends them to `context.md`.
+- Cline executes one task at a time and stops after each, awaiting a human trigger.
+- Context/log files (`context.md`, `execution-log.md`, `quick-log.md`) are append-only.
+
+**Direct Execution Exception:** the only path for Claude Code to write
+production code directly is the explicitly invoked `/quick-task` skill (its own
+size gate escalates back to `/story-creator` if the change is too large). Every
+other path keeps Claude in architect-planner mode — plan only. Claude MUST NOT
+infer a request is "small enough" to implement without `/quick-task`.
+
+Cline execution constraints live in [`../.clinerules/`](../.clinerules/).
+
+---
+
 ## Stack
 
 <!-- TODO: Fill in your project's stack versions and constraints. -->

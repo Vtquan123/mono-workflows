@@ -5,7 +5,7 @@ description: >
   executes the change directly — no story, no task files, no executor handoff,
   no orchestration. Triggers ONLY on the explicit /quick-task command; it is
   the single sanctioned path for Claude to write production code directly
-  (see CLAUDE.md § Direct Execution Exception). Use for a tiny refactor, small
+  (see `.ai/architecture.md` § Roles & Boundaries). Use for a tiny refactor, small
   file edit, quick fix, one-shot code generation, config tweak, or small doc
   update that does not warrant the full Architect → Story → Task → Executor
   workflow.
@@ -72,7 +72,8 @@ See `docs/examples.md` for concrete examples of good fits and anti-patterns.
 The skill activates **only** when the user explicitly runs
 `/quick-task <description>`.
 
-Per `CLAUDE.md § Direct Execution Exception`, this is the **single** path by
+Per `.ai/architecture.md § Roles & Boundaries` (Direct Execution Exception),
+this is the **single** path by
 which Claude may execute production code directly. Claude MUST NOT enter
 quick-task mode by inferring that a plain request "looks small" — without an
 explicit `/quick-task` invocation, the default architect-planner role applies

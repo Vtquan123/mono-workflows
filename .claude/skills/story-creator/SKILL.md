@@ -19,21 +19,11 @@ files only. You MUST NOT write or modify production source code outside `.ai/`.*
 
 ---
 
-## Two-Agent System Architecture
+## Roles & Boundaries
 
-This skill operates within a strict two-role model:
-
-| Role | Tool | Responsibilities |
-|---|---|---|
-| **Architect-Planner** | Claude Code | Story creation, architecture decisions, task orchestration |
-| **Executor** | Cline | Task implementation, context updates, bounded file writes |
-
-**Separation rules (non-negotiable):**
-
-- Claude Code writes ONLY to `.ai/` (stories, tasks, architecture, prompts).
-- Cline writes ONLY to files listed in `Allowed Files` of the active task.
-- Cline NEVER makes architecture decisions — it appends decisions to `context.md`.
-- Claude Code NEVER writes production code — it defines what Cline should write.
+This skill operates within the strict two-role model (Architect-Planner writes
+`.ai/**`; Cline executes within `Allowed Files`). Canonical definition:
+[`.ai/architecture.md` § Roles & Boundaries](../../../.ai/architecture.md).
 
 ---
 

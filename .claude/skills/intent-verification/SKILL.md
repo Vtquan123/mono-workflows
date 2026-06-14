@@ -44,7 +44,7 @@ request ─▶ [intent-verification] ─▶ Direct Answer | Mode 1 | Mode 2 | Mo
 /intent-verify "optimize this workflow"
 ```
 
-Also runs automatically — mandated by `CLAUDE.md § Intent Verification` — at
+Also runs automatically — mandated by `CLAUDE.md § Routing` — at
 the start of any request that is not an explicit command.
 
 ---

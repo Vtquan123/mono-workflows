@@ -67,7 +67,7 @@ user passed `--tier=<name>`, that overrides the computed tier.
 
 ### Phase 4 — Emit Result
 
-Output a single fenced block (parseable by `story-creator`):
+Output a single fenced block:
 
 ```
 TIER: <trivial|medium|large|epic>
@@ -85,73 +85,7 @@ TIE_BREAKERS_APPLIED: <list or none>
 RATIONALE: <one sentence>
 ```
 
-Stop. The caller decides what to do next.
-
----
-
-## Examples
-
-**Trivial**
-
-```
-Request: "Fix typo in the homepage hero title."
-TIER: trivial
-SCORE: -1
-SIGNALS:
-  estimated_files: 1 (+0)
-  scope_keywords: typo (-2)
-  layer_span: 1 (+0)
-  ... (zeros)
-TIE_BREAKERS_APPLIED: ["1-file rename/typo → force trivial"]
-RATIONALE: Single-file copy edit, no layers, no logic.
-```
-
-**Medium**
-
-```
-Request: "Add an `archived` boolean filter to the notes list query."
-TIER: medium
-SCORE: 4
-SIGNALS:
-  estimated_files: 2-3 (+1)
-  scope_keywords: add field (+1)
-  layer_span: 2 (+2)
-  ... (zeros)
-RATIONALE: Two-layer change, one entity, ~3 files.
-```
-
-**Large**
-
-```
-Request: "Add a notes search feature (API + UI)."
-TIER: large
-SCORE: 9
-SIGNALS:
-  estimated_files: 4-7 (+3)
-  scope_keywords: feature, endpoint, component (+3)
-  layer_span: 3 (+4)
-  ui_plus_backend: yes (+3)
-  ... (zeros, after dedupe)
-RATIONALE: Full-stack feature on a single entity.
-```
-
-**Epic**
-
-```
-Request: "Migrate users from MySQL to Postgres, update auth service and admin UI."
-TIER: epic
-SCORE: 21
-SIGNALS:
-  estimated_files: 16+ (+10)
-  scope_keywords: migration, multi-service (+6)
-  layer_span: 4 (+6)
-  modules_involved: 3+ (+5)
-  migration_or_infra: yes (+4)
-  ui_plus_backend: yes (+3)
-  architectural_decision_required: yes (+5)
-TIE_BREAKERS_APPLIED: ["migration_or_infra + modules>=2 → force epic"]
-RATIONALE: Cross-cutting migration spanning multiple modules.
-```
+Stop. The caller decides what to do next. See `docs/examples.md` for scored output examples per tier.
 
 ---
 
@@ -160,3 +94,9 @@ RATIONALE: Cross-cutting migration spanning multiple modules.
 - This skill MUST NOT create or modify files (no `.ai/` writes, no source writes).
 - This skill MUST NOT invoke `story-creator` or `task-creator`.
 - If `.ai/planning-tiers.md` is missing, stop and report — do not guess defaults.
+
+---
+
+## Supporting Docs
+
+- `docs/examples.md` — trivial / medium / large / epic output examples with scores

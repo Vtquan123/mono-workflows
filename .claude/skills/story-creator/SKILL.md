@@ -80,36 +80,28 @@ in story titles, constraint blocks, and affected areas.
 
 ### Phase 0 — Locate and Parse Input
 
-0. **Confirm intent (Mode 3).** story-creator produces full orchestration
-   artifacts. An explicit `/story-creator` invocation already confirms Mode 3 —
-   proceed. If you arrived here by auto-trigger on a vague phrase, run the
-   `intent-verification` gate first (see `.ai/intent-verification.md`) and
-   continue only if it routes to Mode 3.
+0. **Confirm intent (Mode 3).** An explicit `/story-creator` invocation already
+   confirms Mode 3 — proceed. If you arrived here by auto-trigger on a vague phrase,
+   run the `intent-verification` gate first and continue only if it routes to Mode 3.
 1. **Read `.ai/architecture.md`** — load stack constraints, domain vocabulary,
-   path conventions, and open architecture decisions. Stop if the file is
-   missing and tell the user to create it.
+   path conventions, and open architecture decisions. Stop if missing.
 2. Identify input source: inline description, PRD file, or existing STORY-XXX.
 3. If `--prd <path>`: read the file; extract feature name, goals, user personas,
    constraints, out-of-scope items. Stop if file is missing.
 4. If inline description: treat as a one-sentence feature statement.
 5. Scan `.ai/stories/` for highest `STORY-NNN` and assign the next ID. Generate a
    kebab-case slug from the story title (3–5 words, lowercase, drop articles and
-   prepositions). Full directory name: `STORY-NNN-<slug>`
-   (e.g. `STORY-001-<entity>-data-layer`, `STORY-004-<feature>-ui`).
-6. Honor any open architecture decisions recorded in `.ai/architecture.md § Architecture Decisions`.
+   prepositions). Full directory: `STORY-NNN-<slug>`.
+6. Honor any open architecture decisions in `.ai/architecture.md § Architecture Decisions`.
 
 ### Phase 0.5 — Planning Tier Classification
 
-Before doing feature analysis, decide **how much planning this request deserves**.
-
 1. Read `.ai/planning-tiers.md` (single source of truth for tier behavior).
 2. If the user passed `--tier=<name>`, use that tier and skip to the tier-branch.
-3. Otherwise invoke the `tier-classifier` skill on the input (inline description
-   or PRD body). It returns a tier + rationale block.
-4. Record `Tier: <name>` and `Tier Rationale: <one line>` at the top of every
-   artifact this run produces (quick task, story metadata, or epic.md).
+3. Otherwise invoke the `tier-classifier` skill on the input. It returns a tier + rationale block.
+4. Record `Tier: <name>` and `Tier Rationale: <one line>` at the top of every artifact.
 
-**Tier branch** (each branch is described in `docs/planning-tiers.md`):
+**Tier branch** (full behaviors in `docs/planning-tiers.md`):
 
 | Tier      | What this run produces                                                    | Phases below that run                                            |
 |-----------|---------------------------------------------------------------------------|------------------------------------------------------------------|
@@ -118,7 +110,7 @@ Before doing feature analysis, decide **how much planning this request deserves*
 | `large`   | Default. One full story (9 sections) with ≤ 7 tasks                       | Run Phases 1–6 as written below.                                 |
 | `epic`    | Epic dir `.ai/epics/EPIC-NNN-<slug>/` with phased roadmap + Phase-1 stories | Run Phase 1, then the Epic path in `docs/planning-tiers.md`, then Phase 5/6 per generated story. |
 
-Do **not** duplicate signal weights, thresholds, or behaviors inside this file —
+Do **not** duplicate signal weights, thresholds, or behaviors here —
 they live in `.ai/planning-tiers.md` and `docs/planning-tiers.md`.
 
 ### Phase 1 — Feature Analysis
@@ -159,14 +151,7 @@ Boundary rules:
   introduce new shared modules.
 - Split by layer when a story would produce > 7 tasks after decomposition.
 
-Produce a story list. Example:
-
-```
-STORY-001-<entity>-data-layer     <Entity> Data Layer Foundation     (schema + types + repository + service)
-STORY-002-<entity>-api            <Entity> CRUD API                  (GET + POST + PUT + DELETE routes)
-STORY-003-<entity>-list-view      <Entity> List View                 (hook + list component + page)
-STORY-004-<feature>-ui            <Feature> UI                       (feature hook + feature component)
-```
+See `docs/heuristics.md` for decomposition signals, naming conventions, and example story lists.
 
 ### Phase 3 — Story Sizing Check
 
@@ -188,28 +173,18 @@ For each story, write `.ai/stories/STORY-NNN-<slug>/story.md` using the canonica
 template (`docs/story-format.md`). All nine sections are MANDATORY.
 
 Initialize `.ai/stories/STORY-NNN-<slug>/context.md` from `templates/context.md`.
-Create `.ai/stories/STORY-NNN-<slug>/tasks/` (empty directory — task-creator fills it).
-Create `.ai/stories/STORY-NNN-<slug>/logs/` (empty directory — executor fills it).
+Create `.ai/stories/STORY-NNN-<slug>/tasks/` (empty — task-creator fills it).
+Create `.ai/stories/STORY-NNN-<slug>/logs/` (empty — executor fills it).
 
 ### Phase 5 — Task Orchestration via task-creator
 
-For each story (or the single story if invoked for one), invoke `task-creator`:
+For each story, invoke `task-creator`:
 
-```
-INVOCATION PROTOCOL:
-
-1. Read the completed story.md.
-2. Call: /task-creator STORY-NNN-<slug>
-   (task-creator reads story.md and context.md, generates tasks/)
-3. After task-creator completes, verify:
-   - All tasks in tasks/ have sequential IDs.
-   - No task violates its own constraints.
-   - Dependency chain is acyclic (no circular deps).
-4. Record task index in context.md under "## Task Index".
-```
+1. Call `/task-creator STORY-NNN-<slug>`.
+2. Verify: sequential task IDs, no constraint violations, acyclic dependency chain.
+3. Record task index in `context.md` under `## Task Index`.
 
 **Do NOT generate tasks manually.** Always delegate to task-creator.
-This enforces a single canonical task format across the project.
 
 See `docs/orchestration-protocol.md` for the full integration spec.
 
@@ -236,52 +211,6 @@ Next: run /task-creator STORY-001-<entity>-data-layer to generate implementation
 
 ---
 
-## Story Generation Heuristics
-
-### Feature → Story decomposition signals
-
-| Feature phrase | Story split |
-|---|---|
-| "user can create/view/edit/delete a `<entity>`" | `<Entity>` Data Layer + `<Entity>` UI (2 stories) |
-| "user can upload/record `<media>`" | `<Media>` Data Layer + `<Media>` UI (2 stories) |
-| "process/transform data automatically" | Processing Data Layer + Processing Service (2 stories) |
-| "user can tag/label `<entity>`" | Tag Data Layer + `<Entity>`-Tag Association (1–2 stories) |
-| "user can search `<entity>`" | Search API + Search UI (2 stories) |
-| "user logs in / authenticates" | Auth Setup (1 story, always isolated) |
-| "validate input" | Validator utility (part of domain story, not standalone unless shared) |
-| "dashboard / home page" | Dashboard UI (1 story, depends on entity layers) |
-
-### Story naming convention
-
-```
-STORY-NNN-<slug>  <Entity> <Concern> [Layer]
-
-Directory name: STORY-NNN-<slug>  (used for .ai/stories/ folder and all cross-references)
-Human title:    <Entity> <Concern> [Layer]  (used inside story.md heading after the em dash)
-
-Slug rules:
-  - Derived from the human title
-  - Lowercase, hyphen-separated
-  - 3–5 words; drop articles (a, an, the) and prepositions (for, of, in)
-
-Examples:
-  STORY-001-<entity>-data-layer        <Entity> Data Layer Foundation
-  STORY-002-<entity>-list-view         <Entity> List View
-  STORY-003-<entity>-detail-view       <Entity> Detail View
-  STORY-004-<entity>-search-api        <Entity> Search API
-  STORY-005-<entity>-search-ui         <Entity> Search UI
-  STORY-006-<feature>-service          <Feature> Service
-  STORY-007-<entity2>-data-layer       <Entity2> Data Layer
-  STORY-008-user-auth-setup            User Auth Setup
-```
-
-### Affected areas — path conventions
-
-Read `.ai/architecture.md § Path Conventions` for the full path pattern table.
-Use those patterns to populate the `## Affected Areas` section of every story.
-
----
-
 ## Anti-Pattern Prevention
 
 Full catalogue: [docs/anti-patterns.md](docs/anti-patterns.md) — single source of truth.
@@ -295,21 +224,9 @@ Critical subset (highest severity — full list in docs/anti-patterns.md):
 
 ---
 
-## Mandatory Pre-Flight Checklist
+## Pre-Flight Checklist
 
-Before writing any story file:
-
-- [ ] Story represents one coherent business/domain concern
-- [ ] Story decomposes into ≤ 7 tasks
-- [ ] Story has exactly one primary entity
-- [ ] Story goal is user-observable (not implementation-focused)
-- [ ] All Technical Decisions are made (no deferred choices)
-- [ ] Affected Areas list exact file paths (or `[TBD: STORY-NNN]`)
-- [ ] All upstream story dependencies are listed
-- [ ] ≥ 3 acceptance criteria that are mechanically verifiable
-- [ ] No banned phrases (see `docs/anti-patterns.md`)
-- [ ] Execution strategy names the entry task and dependency chain
-- [ ] context.md template is initialized
+Load `docs/checklist.md` and verify all items before writing any story file.
 
 ---
 
@@ -319,6 +236,8 @@ Before writing any story file:
 - [docs/story-format.md](docs/story-format.md) — canonical 9-section story template
 - [docs/sizing-guide.md](docs/sizing-guide.md) — story sizing gates and split patterns
 - [docs/anti-patterns.md](docs/anti-patterns.md) — 10 story anti-patterns + banned phrases
+- [docs/heuristics.md](docs/heuristics.md) — decomposition signals, naming conventions, example story lists
+- [docs/checklist.md](docs/checklist.md) — mandatory pre-flight checklist
 - [docs/orchestration-protocol.md](docs/orchestration-protocol.md) — task-creator integration spec
 - [.ai/planning-tiers.md](../../../.ai/planning-tiers.md) — central tier configuration (signals, thresholds, behaviors)
 - [templates/story.md](templates/story.md) — blank story template

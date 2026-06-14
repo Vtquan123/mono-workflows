@@ -227,3 +227,49 @@ following block to `.ai/stories/STORY-NNN-<slug>/context.md` under
 - Context Update heading MUST use the full `TASK-NNN-<slug>` identifier.
 - MUST include `### Decisions`, `### Files Changed`, `### Notes` subsections.
 - This section must NEVER be empty.
+
+---
+
+## File Creation Rules
+
+### When to mark `[create]`
+
+| Scenario | Files to mark |
+|---|---|
+| New data model added to schema | schema file — `[modify]`; migration file auto-generated, note it in Objective |
+| New route segment | page file — `[create]`; add layout only if segment needs its own layout |
+| New server action module | actions file — `[create]` |
+| New repository module | repository file — `[create]` |
+| New UI component | component file — `[create]` |
+| New shared types file | types file — `[create]` |
+| New custom hook | hook file — `[create]` |
+
+**Directory scaffolding rule**: If a `[create]` file lives in a directory that does not yet exist, include a note in the task Objective: "The executor MUST create the parent directory `<dir>/` before writing the file." Do NOT list directories as separate Allowed Files entries — only list files.
+
+**`[create]` means**: the file does not exist yet; the executor must create it from scratch. If the file already exists when the executor runs, the executor MUST treat it as `[modify]` and preserve existing exports.
+
+---
+
+## File Deletion Rules
+
+If story analysis implies a file should be deleted (e.g., replacing a module, removing a deprecated route), **do NOT silently add it to Allowed Files**. Stop and ask the user:
+
+```
+The story implies deleting `<exact/path/to/file.ts>`.
+Reason: <one sentence why the deletion is needed>.
+Should I include this deletion in the task? (yes / no / rename instead)
+```
+
+- **yes**: write the task with `[delete]` marker in Allowed Files and include a "Delete Steps" subsection in Requirements listing the exact shell command and any import cleanup.
+- **no**: document the file as `[modify]` or exclude it.
+- **rename**: use `[create]` for the new path and `[delete]` for the old path — two separate entries.
+
+**Never infer that a deletion is safe.** Always surface it.
+
+---
+
+## Context Initialization Template
+
+If `.ai/stories/STORY-NNN-<slug>/context.md` is empty or missing, initialize it
+from `../story-creator/templates/context.md`. That template is the canonical
+source of truth for context.md structure and append schema.

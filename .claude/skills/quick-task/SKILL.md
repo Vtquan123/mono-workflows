@@ -63,6 +63,7 @@ Do NOT use `quick-task` for:
 - large-context operations (must read many files to be safe)
 
 If a request is on the "do NOT" list → escalate immediately (see below).
+See `docs/examples.md` for concrete examples of good fits and anti-patterns.
 
 ---
 
@@ -208,55 +209,6 @@ Escalation is a success, not a failure — it means the router worked.
 
 ---
 
-## Examples (good fits)
-
-```
-/quick-task Fix the typo "recieve" → "receive" in src/components/Inbox.tsx
-→ 1 file, 1 word. Phase 0 pass → edit → re-read → "Fixed typo at Inbox.tsx:42."
-
-/quick-task Rename the local var `tmp` to `pendingCount` in calcTotals()
-→ 1 file, ~4 lines, no contract change. Direct edit, lint, done.
-
-/quick-task Bump the retry limit from 3 to 5 in config/http.ts
-→ Config tweak, 1 line. Direct edit, done.
-
-"quick fix — the empty-state text should say 'No notes yet'"
-→ Signal-activated, 1 file, copy change. Gate passes → direct edit.
-
-/quick-task Add a JSDoc comment to the exported formatDate() helper
-→ 1 file, doc-only. Direct edit, done.
-
-"what does the debounce() in src/lib/utils.ts actually do?"
-→ Lightweight analysis. Read one file, answer. No artifacts.
-```
-
-## Anti-Patterns (escalate instead)
-
-```
-/quick-task Add user authentication
-→ ANTI: risk class = auth, multi-file, architectural. Escalate → story-creator.
-
-/quick-task Refactor the API layer to use the repository pattern
-→ ANTI: "refactor (system|architecture)", cross-file, new pattern. Escalate.
-
-/quick-task Add a search feature to the notes list
-→ ANTI: feature, UI + backend, multi-layer. Escalate → large/epic tier.
-
-/quick-task Fix the bug where the app crashes sometimes on save
-→ ANTI: unknown root cause, investigation chain needed (check 9 fails). Escalate.
-
-/quick-task Just quickly migrate the DB schema, it's a small change
-→ ANTI: "migration" risk class, irreversible. Escalate regardless of size.
-
-/quick-task Rename the User type everywhere
-→ ANTI: shared type / public contract, unbounded file count. Escalate.
-```
-
-**The recurring trap:** a request *described* as small ("just", "quick",
-"simple") that *is not* small. Trust the size gate, not the adjective.
-
----
-
 ## Relationship to Planning Tiers
 
 `quick-task` and the `trivial` planning tier overlap but are not the same:
@@ -272,6 +224,10 @@ still want an executor-handoff artifact. Both escalate the same way when a task
 turns out to be bigger than it looked.
 
 ---
+
+## Supporting Docs
+
+- `docs/examples.md` — good fits and anti-patterns (load when unsure if a request qualifies)
 
 ## Reference Files
 

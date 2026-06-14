@@ -9,7 +9,8 @@ Run ALL items before writing any story file. One failure = fix it first.
 - [ ] All Technical Decisions are made (no deferred choices)
 - [ ] Affected Areas list exact file paths (or `[TBD: STORY-NNN]`)
 - [ ] All upstream story dependencies are listed
-- [ ] ≥ 3 acceptance criteria that are mechanically verifiable
+- [ ] ≥ 3 acceptance criteria appropriate to validation scope
+- [ ] Final integration criterion uses full build / project-level validation
 - [ ] No banned phrases (see `docs/anti-patterns.md`)
 - [ ] Execution strategy names the entry task and dependency chain
 - [ ] context.md template is initialized

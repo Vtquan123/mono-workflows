@@ -160,6 +160,13 @@ The task slug uses the same rules as story slugs: 3–5 words, lowercase, hyphen
 Every field in the canonical template (`docs/task-format.md`) is MANDATORY.
 `N/A` is allowed only for genuinely inapplicable sections.
 
+Set each task's `## Validation Mode` (`none` | `review` | `scoped` | `full`) from
+files affected, task type, risk, dependency position, and whether it is an
+integration/final task or touches shared contracts or build/runtime config. Use the
+default mapping and high-risk rules in `docs/task-format.md § \`## Validation Mode\``.
+Acceptance criteria and `## Validation Commands` / `## Validation Notes` must match
+the chosen mode. Final integration and high-risk tasks MUST be `full`.
+
 File path inference: read `.ai/architecture.md § Path Conventions` and use those patterns in `## Allowed Files`.
 
 File creation and deletion rules: see `docs/task-format.md § File Creation Rules` and `§ File Deletion Rules`.

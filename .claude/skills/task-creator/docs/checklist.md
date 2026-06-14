@@ -7,7 +7,9 @@ Run ALL items before writing any task file. One failure = fix it first.
 - [ ] Objective names exact exports and file paths (no ambiguity)
 - [ ] All file paths are exact (or `[TBD: dep TASK-NNN]` with explicit dep)
 - [ ] All implicit upstream dependencies are listed in Dependencies
-- [ ] ≥ 2 acceptance criteria that are mechanically verifiable
+- [ ] `## Validation Mode` set (none|review|scoped|full) per task type/risk
+- [ ] ≥ 2 acceptance criteria appropriate to the validation_mode
+- [ ] Final integration / high-risk task uses `full` validation
 - [ ] Context Update section contains the verbatim append block
 - [ ] Tasks are ordered so dependencies come first (lower ID = runs sooner)
 - [ ] No banned phrases (see `docs/anti-patterns.md` § Red-Flag Phrase Blocklist)

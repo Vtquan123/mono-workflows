@@ -58,12 +58,20 @@ function signatures. Never defer decisions to the executor.
 2. ...
 3. ...
 
+## Validation Mode
+
+One of: `none` | `review` | `scoped` | `full`.
+See `.ai/architecture.md § Validation Convention`.
+
+<none|review|scoped|full>
+
 ## Acceptance Criteria
 
 Markdown checklist. Each criterion must be verifiable by running a command
-or inspecting a specific, named output. No subjective criteria.
+or inspecting a specific, named output, OR (for `review`/`none` modes) by a
+named review check. No subjective criteria.
 
-- [ ] `<build-command>` exits with code 0
+- [ ] `<validation command appropriate to the mode>`
 - [ ] `<specific verifiable check>`
 - [ ] `<specific verifiable check>`
 
@@ -99,14 +107,14 @@ relationship_notes: |
   (optional, 1–2 lines on non-obvious coupling)
 \`\`\`
 
-## Validation Steps
+## Validation Commands
 
-Ordered list of shell commands runnable from the project root.
-Each command includes a comment explaining what it verifies.
+Commands runnable from the project root, scoped to the task's `validation_mode`.
+For `review`/`none`, replace this section with `## Validation Notes` listing the
+review checks performed (or why validation is not required).
 
-1. `<build-command>` — confirms compilation is clean
+1. `<command appropriate to validation_mode>` — <what it verifies>
 2. `<command>` — <what it verifies>
-3. `<command>` — <what it verifies>
 
 ## Context Update
 
@@ -185,11 +193,43 @@ following block to `.ai/stories/STORY-NNN-<slug>/context.md` under
 - Do NOT say "use appropriate error handling" — say "wrap in try/catch;
   throw `new AppError('DB_ERROR', message)` on failure".
 
+### `## Validation Mode`
+
+- Exactly one of: `none` | `review` | `scoped` | `full`.
+- Definitions: `none` = metadata-only/non-functional, no command validation;
+  `review` = manual/review checks only (docs, copy, prompt, rule, markdown);
+  `scoped` = targeted validation (lint, typecheck, unit/package test);
+  `full` = full build or project-level validation.
+- The task creator selects the mode from files affected, task type, risk level,
+  dependency position, and whether the task is an integration/final task or touches
+  shared contracts or build/runtime config. Default mapping:
+
+  | Task Type | Default validation_mode |
+  |---|---|
+  | docs / markdown / prompt / rules only | review |
+  | formatting / comments only | review |
+  | type-only localized code change | scoped |
+  | localized feature code | scoped |
+  | tests-only change | scoped |
+  | shared interface / API contract | full |
+  | package config / build config | full |
+  | migration / deployment / runtime config | full |
+  | final integration task | full |
+
+- High-risk changes (shared interfaces/contracts, build/package/dependency config,
+  migrations, auth flow, routing/API boundaries, deploy/runtime config, cross-package
+  integration) MUST use `full`. Final integration tasks MUST use `full`.
+
 ### `## Acceptance Criteria`
 
 - Markdown checklist (`- [ ] …`).
 - Minimum 2 criteria; aim for 3–5.
-- MUST include the build command (from `.ai/architecture.md § Commands`) as first criterion on every task.
+- MUST include validation appropriate to the task's `validation_mode`
+  (see `## Validation Mode` below and `.ai/architecture.md § Validation Convention`):
+  - `full` → include the full build / project-level command (from `.ai/architecture.md § Commands`).
+  - `scoped` → include targeted commands (typecheck, lint, unit/package test) or explain why none available.
+  - `review` → include review checks instead of build commands.
+  - `none` → explain why validation is not required.
 - For API tasks: include a `curl` command with expected status code.
 - For repository/service tasks: include a named export check or unit test.
 - No subjective criteria ("looks correct", "works", "is implemented").
@@ -213,12 +253,14 @@ following block to `.ai/stories/STORY-NNN-<slug>/context.md` under
 - `critical_path` `true` iff the task lies on the longest hard-dependency chain through the story. At least one task per story MUST be flagged.
 - `relationship_notes` optional. Use only when coupling is non-obvious.
 
-### `## Validation Steps`
+### `## Validation Commands`
 
-- Ordered numbered list of shell commands.
-- Runnable from project root without modification.
-- No placeholder commands. Every command must work on the current stack.
-- Use commands from `.ai/architecture.md § Commands`.
+- Commands scoped to the task's `validation_mode`.
+- Runnable from project root without modification. No placeholder commands.
+- `full` → include the build/project-level command from `.ai/architecture.md § Commands`.
+- `scoped` → targeted commands (typecheck, lint, unit/package test).
+- `review`/`none` → replace with `## Validation Notes`: list review checks performed,
+  or state why validation is not required.
 
 ### `## Context Update`
 

@@ -129,8 +129,41 @@ All paths are relative to the project root.
 # npm run lint     # linter
 ```
 
-Validation convention: every task's Acceptance Criteria MUST include
-the build command as the first item.
+## Validation Convention
+
+Validation is risk-based and task-appropriate. Tasks are NOT required to
+run a full build. Each task declares a `validation_mode` and includes only
+the validation appropriate to it.
+
+Modes:
+
+- `none`: no command validation required. Metadata-only or non-functional changes.
+- `review`: manual/review validation only. Docs, copy, prompt, rule, or markdown-only changes.
+- `scoped`: targeted validation for the affected area — lint, typecheck, unit test, or package-level test.
+- `full`: full build or project-level validation required.
+
+Policy by tier and risk:
+
+- **Trivial / documentation-only**: no build required unless changed files affect
+  executable code. May use review-only validation.
+- **Small / localized code**: prefer scoped validation (typecheck, lint, targeted
+  tests, affected-package). Full build optional unless change affects integration behavior.
+- **Medium / micro-story**: scoped validation per task. Full build (or equivalent
+  integration validation) only on final integration tasks or when the task changes shared contracts.
+- **Large / full-story**: task-appropriate validation per task. Final integration
+  task includes full build or equivalent project-level validation.
+- **Epic / multi-phase**: full build (or equivalent) at phase boundaries and final
+  integration. Do not force every leaf task to run full build.
+- **High-risk tasks**: full build or stronger validation is required when changing
+  shared interfaces/contracts, build configuration, package/dependency configuration,
+  migrations, auth/authorization flow, routing or API boundaries, deployment/runtime
+  configuration, or cross-package integration.
+
+Acceptance criteria must include validation appropriate to the task's `validation_mode`:
+`full` → full build/project-level command; `scoped` → targeted commands (or explain why
+none available); `review` → review checks instead of build commands; `none` → explain
+why validation is not required. Full validation for final integration and high-risk
+tasks is never optional.
 
 ---
 

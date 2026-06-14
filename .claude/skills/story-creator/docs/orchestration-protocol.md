@@ -103,9 +103,10 @@ TASK-NNN.md contains:
   - Allowed Files: exact paths (≤ 5 per task)
   - Forbidden: explicit prohibitions + "All files not listed in Allowed Files"
   - Requirements: ≥ 3 MUST/MUST NOT items
-  - Acceptance Criteria: ≥ 2 runnable checks including the build command
+  - Validation Mode: none | review | scoped | full
+  - Acceptance Criteria: ≥ 2 checks appropriate to the validation_mode
   - Dependencies: explicit TASK-IDs or "None"
-  - Validation Steps: runnable shell commands
+  - Validation Commands / Notes: per validation_mode
   - Context Update: verbatim append block for context.md
 ```
 

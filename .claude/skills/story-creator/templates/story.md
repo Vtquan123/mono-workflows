@@ -48,7 +48,10 @@ _(Copy the Stack Rules block verbatim from `.ai/architecture.md § Stack Rules`)
 
 ## Acceptance Criteria
 
-- [ ] `<build-command>` exits with code 0 after all tasks complete
+<!-- Final integration criterion uses full build/project-level validation.
+     Individual concerns may use scoped/review validation per their validation_mode.
+     See .ai/architecture.md § Validation Convention. -->
+- [ ] `<build-command>` (full validation) exits with code 0 after final integration
 - [ ] <!-- Named export or curl command for the primary deliverable -->
 - [ ] <!-- Type-check or runtime verification -->
 

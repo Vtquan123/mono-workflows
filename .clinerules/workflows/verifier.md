@@ -59,7 +59,14 @@ Do not scan the full repo.
 
 ---
 
-## Phase 2 — Build + Lint
+## Phase 2 — Validation (per task `validation_mode`)
+
+Scope this phase to the task's `## Validation Mode` (see `.ai/architecture.md § Validation Convention`):
+
+- `none` — skip. Record "no command validation required".
+- `review` — run no build/lint commands; confirm the review checks in `## Validation Notes`.
+- `scoped` — run only the listed scoped commands (typecheck, lint, targeted/package tests). Do not run a full build.
+- `full` — run the full build/project-level validation in addition to typecheck + lint.
 
 Run only the tools the project actually configures. Skip anything not configured (note "tool not configured" in the report). Do not invent commands.
 
@@ -133,7 +140,8 @@ Output exactly this block. No prose before or after.
 # Verification Report
 
 ## Verified Areas
-- Build: <pass | fail | n/a>
+- Validation Mode: <none | review | scoped | full>
+- Build: <pass | fail | n/a (per mode)>
 - Types: <pass | fail | n/a>
 - Lint: <pass | fail | n/a>
 - Acceptance Criteria: <N/M satisfied>

@@ -85,7 +85,7 @@ Markdown checklist. Each criterion must be verifiable by running a command
 or inspecting a specific, named output. No subjective criteria.
 Minimum 3 criteria.
 
-- [ ] `<build-command>` exits with code 0 after all tasks complete
+- [ ] `<build-command>` (full validation) exits with code 0 after final integration
 - [ ] <specific verifiable check — named export, curl command, etc.>
 - [ ] <specific verifiable check>
 
@@ -188,7 +188,11 @@ The next task executor MUST read context.md before starting.
 ### `## Acceptance Criteria`
 
 - Markdown checklist (`- [ ] …`). Minimum 3 items.
-- Always include the build command (from `.ai/architecture.md § Commands`) as the first item.
+- Include validation appropriate to the story's scope (see
+  `.ai/architecture.md § Validation Convention`). The story's final integration
+  criterion MUST include the full build / project-level command (from
+  `.ai/architecture.md § Commands`); individual concerns may use scoped or review
+  validation per their `validation_mode`.
 - For stories with API tasks: include a `curl` command with expected status code.
 - For stories with data tasks: include a named export or schema check.
 - No subjective criteria ("looks correct", "is fully working", "is complete").

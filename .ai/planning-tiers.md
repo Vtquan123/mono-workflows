@@ -120,6 +120,13 @@ thresholds:
 
 What each tier produces and which planning phases run.
 
+Validation per tier follows `.ai/architecture.md § Validation Convention`. In short:
+`trivial` → `review`/`scoped` (full build only if executable code is affected);
+`medium` → `scoped` per task, `full` on final integration or shared-contract changes;
+`large` → task-appropriate per task, `full` on the final integration task;
+`epic` → `full` at phase boundaries and final integration, not on every leaf task.
+High-risk changes always use `full` regardless of tier.
+
 ### `trivial`
 
 ```yaml

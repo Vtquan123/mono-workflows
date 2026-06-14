@@ -117,11 +117,22 @@ Skip the story/context loads. Phase 5 appends to
 
 ## Phase 4 — Validation
 
-> **DISABLED by default.** Skip this phase entirely unless the user explicitly requests validation (e.g. "validate", "run lint", "check types"). When skipped, record `Validation: SKIPPED` in the Phase 6 report and execution log.
+**Driven by the task's `## Validation Mode`.** Do not assume every task has a build
+command. Read the mode and act:
+
+- `none` — no command validation. Record `No command validation required` and skip.
+- `review` — run no build commands. Perform the checks listed in `## Validation Notes`
+  (e.g. links/headings render, copy reads correctly) and report them.
+- `scoped` — run only the commands listed in `## Validation Commands` (lint, typecheck,
+  targeted/package tests). Do not escalate to a full build.
+- `full` — run the full build / project-level validation command listed for the task.
+
+If `scoped` or `full` and no commands are listed, mark the task BLOCKED and ask rather
+than guessing. See `.ai/architecture.md § Validation Convention`.
 
 **Objective**: Confirm the implementation is correct for the affected scope.
 
-**Run only what is relevant:**
+**Run only what the mode requires:**
 
 ```bash
 # Lint changed files only (if applicable)
@@ -193,7 +204,7 @@ See `.ai/architecture.md § Commands` for the exact commands for this project.
 
 - Status: COMPLETED | FAILED | BLOCKED
 - Files touched: <list>
-- Validation: PASSED | FAILED (reason)
+- Validation: <mode> — PASSED | FAILED (reason) | NOT REQUIRED
 - Blocker (if any): <description>
 ```
 
@@ -219,9 +230,10 @@ Files modified:
   - <path> (<what changed>)
 
 Validation:
-  - build: PASSED / SKIPPED
-  - lint: PASSED / N/A / SKIPPED
-  - tests: PASSED / N/A / SKIPPED
+  - Mode: none | review | scoped | full
+  - Commands run / Checks performed:
+    - <command or review check>
+  - Result: passed / failed (reason) / not required
 
 Context updated:
   - context.md: appended

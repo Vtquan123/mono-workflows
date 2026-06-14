@@ -131,10 +131,12 @@ block — nothing else.
 - Criteria use: "works correctly", "looks good", "is complete", "functions as expected"
 - Criteria are not runnable (no commands, no named outputs)
 
-**Remediation**: Write ≥ 3 acceptance criteria. Always include:
-1. The build command exits with code 0
-2. A named export or curl command for the primary deliverable
-3. A type-check assertion or runtime verification
+**Remediation**: Write ≥ 3 acceptance criteria appropriate to the story's
+`validation_mode` (see `.ai/architecture.md § Validation Convention`). Include:
+1. Validation matching the mode — full build for final integration / high-risk;
+   scoped commands (typecheck, lint, targeted test) otherwise; review checks for docs-only
+2. A named export or curl command for the primary deliverable (when applicable)
+3. A type-check assertion, runtime verification, or named review check
 
 ---
 

@@ -138,7 +138,8 @@ verified by a command.
 **Detection signals**:
 - `"works correctly"`, `"looks good"`, `"is implemented"`, `"functions as expected"`
 - `"the user can X"` without a corresponding test or curl command
-- Missing build command as the first criterion
+- Validation not matching the task's `validation_mode` (e.g. `full` task missing the
+  build command, or `scoped` task with no targeted command and no explanation)
 
 **Bad example**:
 ```
@@ -148,11 +149,14 @@ verified by a command.
 - [ ] Code is clean
 ```
 
-**Correction**:
+**Correction** (localized repository task → `scoped` validation):
 ```
+## Validation Mode
+scoped
+
 ## Acceptance Criteria
-- [ ] `<build-command>` exits with code 0
 - [ ] `<type-check-command>` reports no errors in `src/lib/<entity>.repository.ts`
+- [ ] `<lint-command>` passes for the changed file
 - [ ] Unit test `findById returns null for unknown ID` passes
 ```
 

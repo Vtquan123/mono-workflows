@@ -130,11 +130,15 @@ Make the change directly with `Edit` / `Write`. One focused edit. No
 
 ### Phase 3 — Verify
 
-Do the cheapest sufficient check:
+Do the cheapest sufficient check (scoped validation — full build not required for
+a quick task unless it touches shared contracts or build/runtime config):
 
-- code change → run lint/build/test for the touched scope if a command exists
+- code change → run lint/typecheck/test for the touched scope if a command exists
   and is fast; otherwise re-read the edited region.
-- doc/config change → re-read the edited region.
+- doc / copy / config change → review check (re-read the edited region; confirm
+  links/headings render for markdown).
+- if the change touches shared interfaces, build config, migrations, or routing →
+  this is no longer a quick task; escalate.
 
 If verification reveals the change is bigger than expected → escalate.
 

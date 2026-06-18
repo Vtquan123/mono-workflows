@@ -40,6 +40,7 @@ Canonical tiers: [`.ai/planning-tiers.md`](.ai/planning-tiers.md).
 | Intent routing & ambiguity policy | [`.ai/intent-verification.md`](.ai/intent-verification.md) |
 | Planning tier definitions & thresholds | [`.ai/planning-tiers.md`](.ai/planning-tiers.md) |
 | Skill procedures | [`.claude/skills/*/SKILL.md`](.claude/skills/) |
+| Agent definitions | [`.claude/agents/`](.claude/agents/) |
 | Cline execution rules | [`.clinerules/`](.clinerules/) |
 
 ## Commands
@@ -51,3 +52,23 @@ Canonical tiers: [`.ai/planning-tiers.md`](.ai/planning-tiers.md).
 - `/task-creator` — story → file-scoped Cline tasks
 
 Project build/test commands: [`.ai/architecture.md` § Commands](.ai/architecture.md).
+
+## Agent Usage
+
+Agents live in [`.claude/agents/`](.claude/agents/) — focused specialists for
+routing, analysis, planning, review, and validation. They add checkpoints and
+reduce context load; they do **not** replace skills. Skills remain the
+procedural source of truth; Cline remains the constrained executor.
+
+Full routing matrix, recommended flow, and usage principles:
+**[`docs/agents.md`](docs/agents.md)** (single source of truth).
+
+| Situation | Use |
+|---|---|
+| Workflow mode unclear | `workflow-orchestrator` |
+| Architecture impact possible | `architecture-analyst` |
+| Define story boundaries | `story-designer` → `/story-creator` |
+| Plan task breakdown | `task-planner` → `/task-creator` |
+| Task ready, pre-execution gate | `task-reviewer` |
+| Validation strategy / review | `test-validator` |
+| Cline finished a task | `execution-guardian` |

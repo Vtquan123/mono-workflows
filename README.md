@@ -19,6 +19,7 @@ mono-workflows/
 │   ├── quick-tasks/                      # Tier=trivial single-task artifacts
 │   └── epics/                            # Tier=epic phased roadmaps + child stories
 ├── .claude/
+│   ├── agents/                           # Routing/analysis/planning/review agents (see docs/agents.md)
 │   └── skills/
 │       ├── intent-verification/          # Skill: route request → mode before any planning
 │       ├── tier-classifier/              # Skill: request → planning tier
@@ -44,6 +45,10 @@ mono-workflows/
 - Claude Code NEVER writes production source code.
 - Cline NEVER makes architecture decisions — it records them in `context.md`.
 - Tasks are executed one at a time. Cline stops after each task and waits for human trigger.
+
+**Agents** add routing/analysis/planning/review/validation checkpoints around
+this model without replacing skills. See [`docs/agents.md`](docs/agents.md) for
+the Agent Routing Matrix, recommended flow, and usage principles.
 
 ---
 

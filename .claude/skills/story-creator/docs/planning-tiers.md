@@ -114,7 +114,8 @@ omitted to cut tokens.
 
 ## Constraints
 
-<verbatim copy from .ai/architecture.md § Stack Rules>
+<reference .ai/architecture.md § Stack Rules — by rule ID (e.g. SR-001) when
+defined, else section heading + one-line summary; do NOT paste the block>
 ```
 
 `context.md` is initialized with a slim header (just `## Status` and

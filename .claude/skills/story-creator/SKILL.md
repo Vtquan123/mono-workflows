@@ -31,9 +31,32 @@ This skill operates within the strict two-role model (Architect-Planner writes
 
 Read `.ai/architecture.md § Stack` and `.ai/architecture.md § Stack Rules`.
 
-Translate those rules into per-story constraints. Do not leave them implicit.
-Every story's `## Constraints` section MUST copy the Stack Rules block verbatim
-from `.ai/architecture.md`.
+Reference those rules in each story's `## Constraints` section — do **not**
+copy long architecture blocks into stories. Duplicated policy wastes tokens and
+drifts when `.ai/architecture.md` changes.
+
+A story's `## Constraints` section MUST:
+
+- Reference `.ai/architecture.md § Stack Rules` (and `§ Domain Rules`,
+  `§ Path Conventions` where relevant) by section heading.
+- Include only short, story-relevant rule summaries when useful.
+- Prefer stable rule IDs when `.ai/architecture.md` defines them (e.g. SR-001).
+- If rule IDs are missing, reference the section heading and give a one-line
+  summary only — never paste the full block.
+
+The story must remain understandable to Cline without copying the entire
+architecture document. Example:
+
+```md
+## Constraints
+
+- Must comply with `.ai/architecture.md § Stack Rules`.
+- Must comply with `.ai/architecture.md § Domain Rules`, where relevant.
+- Must follow `.ai/architecture.md § Path Conventions`.
+- Relevant architecture rules for this story:
+  - SR-001: <short rule summary>
+  - SR-003: <short rule summary>
+```
 
 ---
 

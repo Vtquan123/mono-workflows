@@ -1,85 +1,157 @@
-# Agents
+# Agent Policy
 
-How Claude Code decides between a direct answer, an agent, a skill, and Cline in
-the mono-workflows two-agent model (Claude plans, Cline executes).
+Single source of truth for **when agents are mandatory, recommended, optional, or
+forbidden** in the mono-workflows two-agent model (Claude plans, Cline executes).
+Do not duplicate this matrix or these levels elsewhere — link here.
+
+## Purpose
+
+Agents are specialized **checkpoints** used to shape, verify, or review work.
+They are reasoning roles, not executors. They do **not** replace skills,
+`.ai/` source-of-truth documents, or Cline executor workflows.
+
+Hierarchy (most authoritative first):
+
+- **`.ai/`** — source of truth. Architecture, intent routing, planning tiers.
+- **skills** — procedural workflows for Claude (`story-creator`, `task-creator`,
+  `quick-task`, `reviewer`, etc.).
+- **agents** — specialized reasoning / checkpoint roles. They read and check; they
+  do not own procedure and do not write production code.
+- **`.clinerules/`** — execution constraints for Cline.
+- **Cline** — scoped executor, not architect. Implements only the approved task
+  within its `Allowed Files`.
 
 Agents live in [`.claude/agents/`](../.claude/agents/). Skills live in
 [`.claude/skills/`](../.claude/skills/). Cline rules live in
-[`.clinerules/`](../.clinerules/). This file is the single source of truth for
-agent routing — do not duplicate the full matrix elsewhere.
+[`.clinerules/`](../.clinerules/). Canonical policy lives in
+[`.ai/`](../.ai/).
+
+## Agent Usage Levels
+
+### MUST use
+
+- **`workflow-orchestrator`**
+  - When the user request is ambiguous.
+  - When the correct workflow mode is unclear.
+  - When it is unclear whether the request should become a direct answer, story
+    creation, task creation, review, or Cline handoff.
+
+- **`architecture-analyst`**
+  - When the request affects architecture, stack choices, path conventions,
+    dependencies, contracts, module boundaries, or cross-layer design.
+  - When [`.ai/architecture.md`](../.ai/architecture.md) is missing, incomplete,
+    or still contains placeholder sections.
+  - Before generating stories/tasks that rely on unclear project architecture.
+
+- **`task-reviewer`**
+  - Before handing **any** generated task to Cline.
+  - Must verify allowed files, scope size, dependencies, acceptance criteria,
+    validation mode, and whether the task is executable by Cline without
+    architectural guessing.
+
+- **`execution-guardian`**
+  - After Cline reports a task as complete.
+  - Must check whether Cline respected allowed files, completed acceptance
+    criteria, updated required context/log files, and followed the declared
+    validation mode.
+
+### SHOULD use
+
+- **`story-designer`** — for large features, multi-step product changes, unclear
+  acceptance criteria, or requests that need decomposition into stories.
+- **`task-planner`** — when a story needs a dependency graph, task DAG,
+  sequencing, parallelization, or careful task slicing.
+- **`test-validator`** — when validation mode is unclear, tests are missing, task
+  risk is medium/high, or the implementation touches fragile behavior.
+
+### MAY use
+
+- For extra confidence on complex requests.
+- When the user explicitly asks for deeper review.
+- When the cost of a mistake is higher than the cost of extra reasoning.
+
+### MUST NOT use
+
+Agents must **not** be used when:
+
+- The user asks a simple explanation question.
+- The user asks for a small rewrite, translation, or direct answer.
+- A skill already provides the complete required procedure.
+- The task is low-risk and does not require specialized review.
+- Multiple agents would only repeat the same analysis.
+- The agent would need to invent project facts not present in `.ai/` or the
+  current story/task context.
 
 ## Agent Routing Matrix
 
-| Situation | Use | Purpose | Next Step |
+| Situation | Required agent | Optional agent | Notes |
 |---|---|---|---|
-| User asks a simple explanation or asks about the repo | No agent | Answer directly without workflow overhead | Respond directly |
-| User request needs workflow mode selection | `workflow-orchestrator` | Classify as direct answer, quick task, planning-only, or full workflow | Route to the right next step |
-| Request may affect architecture, stack, path conventions, dependencies, commands, or cross-cutting design | `architecture-analyst` | Detect architecture impact and missing context | Update architecture context or proceed |
-| Feature request needs story boundaries | `story-designer` | Define story scope, business goal, user outcome, and planning tier | Run `story-creator` skill |
-| Story is approved and needs task breakdown | `task-planner` | Propose safe, file-scoped, dependency-aware task sequence | Run `task-creator` skill |
-| Story artifact needs to be created | `story-creator` skill | Create story files using canonical repo format | Proceed to task planning |
-| Task artifact needs to be created | `task-creator` skill | Create task files using canonical repo format | Review task before execution |
-| Task file is ready but not yet executed | `task-reviewer` | Check scope, allowed files, dependencies, acceptance criteria, and Cline readiness | Hand to Cline only if PASS |
-| Task is ready for implementation | Cline executor | Implement only the approved task within Allowed Files | Produce execution report |
-| Validation strategy is unclear or task risk needs validation review | `test-validator` | Recommend minimal meaningful validation or review validation results | Proceed to execution review |
-| Cline has completed a task | `execution-guardian` | Verify acceptance criteria, scope compliance, validation status, and context/log updates | Continue, fix, or stop |
+| User request is ambiguous | workflow-orchestrator | none | Decide workflow mode first |
+| Architecture unclear or impacted | architecture-analyst | workflow-orchestrator | Do not generate stories/tasks from guesses |
+| Creating a story | story-designer | architecture-analyst | Use architecture analyst if architecture is unclear |
+| Creating tasks from a story | task-planner | test-validator | Use task-reviewer before Cline handoff |
+| Before Cline execution | task-reviewer | test-validator | Mandatory checkpoint |
+| After Cline completion | execution-guardian | reviewer / test-validator | Mandatory compliance checkpoint |
+| Code quality review | reviewer | test-validator | Reviewer checks code quality, guardian checks workflow compliance |
+| Simple Q&A | none | none | Answer directly |
+
+## Agent Chain Limits
+
+Reduce token waste:
+
+- Default to zero or one agent.
+- Use more than one agent only when each has a **distinct** responsibility.
+- Do not chain agents with overlapping roles.
+- Do not run `reviewer` and `execution-guardian` for the same purpose.
+- Prefer the smallest sufficient agent set.
+- Never use agents as a substitute for reading the relevant source-of-truth files.
+
+## Reviewer vs Execution Guardian
+
+- **`execution-guardian`** checks **workflow compliance**: allowed files, task
+  scope, acceptance criteria, validation mode, context/log updates, whether the
+  next task can start.
+- **`reviewer`** checks **code quality**: correctness, edge cases, bugs,
+  maintainability, security, performance, typing/API issues.
+
+Rules:
+
+- Always use `execution-guardian` after Cline task completion.
+- Use `reviewer` only when code quality review is needed, task risk is
+  medium/high, or the user explicitly asks for it.
 
 ## Recommended Agent Flow
 
 ```text
 Simple question
-  -> Direct answer
+  -> Direct answer (no agent)
 
 Small, well-scoped implementation request
-  -> workflow-orchestrator
-  -> architecture-analyst, if architecture impact is possible
-  -> quick task or task-creator skill
-  -> task-reviewer
+  -> workflow-orchestrator        (if mode unclear)
+  -> architecture-analyst         (if architecture impact possible)
+  -> quick-task or task-creator skill
+  -> task-reviewer                (MUST, before Cline)
   -> Cline executor
-  -> test-validator, if validation is needed
-  -> execution-guardian
+  -> execution-guardian           (MUST, after Cline)
+  -> reviewer / test-validator    (if risk medium/high or requested)
 
 Feature or multi-step request
   -> workflow-orchestrator
-  -> architecture-analyst, if architecture impact is possible
-  -> story-designer
-  -> story-creator skill
-  -> task-planner
-  -> task-creator skill
-  -> task-reviewer
+  -> architecture-analyst         (if architecture impact possible)
+  -> story-designer -> story-creator skill
+  -> task-planner -> task-creator skill
+  -> task-reviewer                (MUST, before Cline)
   -> Cline executor
-  -> test-validator, if validation is needed
-  -> execution-guardian
+  -> execution-guardian           (MUST, after Cline)
+  -> reviewer / test-validator    (if risk medium/high or requested)
 ```
 
 ## Agents vs Skills vs Cline
 
-- **Agents** — focused specialists for routing, analysis, planning, review, and
-  validation. They shape and check work; they read, they do not own procedure.
-- **Skills** — the canonical procedural workflow logic and artifact format
-  (`story-creator`, `task-creator`, `quick-task`, etc.). Agents do not replace them.
-- **Cline** — the constrained executor. Implements only the approved task within
-  its `Allowed Files`. See [`.clinerules/workflows/executor.md`](../.clinerules/workflows/executor.md).
-
-Rules:
-
-- Agents must not replace skills.
-- Agents must not write production code unless explicitly intended and safe
-  (only `/quick-task` lets Claude write code directly — see
-  [`.ai/architecture.md` § Roles & Boundaries](../.ai/architecture.md)).
-- Cline must not make architecture decisions or expand task scope.
-
-## Agent Usage Principles
-
-1. Use the fewest agents necessary.
-2. Do not use agents for simple direct answers.
-3. Always use `workflow-orchestrator` when the correct workflow mode is unclear.
-4. Use `architecture-analyst` before planning when architecture impact is possible.
-5. Use `story-designer` before `story-creator` for feature-level requests.
-6. Use `task-planner` before `task-creator` for multi-task stories.
-7. Always use `task-reviewer` before handing a generated task to Cline.
-8. Use `test-validator` only when validation strategy or validation results need focused review.
-9. Always use `execution-guardian` after Cline completes a task.
-10. Do not let Cline modify files outside `Allowed Files`.
-11. Do not let Cline make architecture decisions.
-12. Do not duplicate long rules across agents, skills, and docs.
+- **Agents** must not replace skills.
+- **Agents** must not write production code. Only `/quick-task` lets Claude write
+  code directly — see
+  [`.ai/architecture.md` § Roles & Boundaries](../.ai/architecture.md).
+- **Cline** must not make architecture decisions or expand task scope beyond its
+  `Allowed Files`. See
+  [`.clinerules/workflows/executor.md`](../.clinerules/workflows/executor.md).

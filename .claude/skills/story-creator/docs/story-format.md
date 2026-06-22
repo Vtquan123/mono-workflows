@@ -40,7 +40,10 @@ Do NOT describe implementation details here.
 Hard boundaries the executor MUST respect. These are non-negotiable.
 
 **Stack constraints:**
-_(Copy the Stack Rules block verbatim from `.ai/architecture.md § Stack Rules`)_
+- Must comply with `.ai/architecture.md § Stack Rules` (and `§ Domain Rules`,
+  `§ Path Conventions` where relevant).
+- Reference relevant rules by stable ID when defined (e.g. SR-001), otherwise by
+  section heading with a one-line summary. Do NOT paste the full block.
 
 **Scope constraints:**
 - This story owns: <list the files/directories this story controls>
@@ -164,7 +167,9 @@ The next task executor MUST read context.md before starting.
 
 - Split into Stack constraints (always present, project-wide) and Scope constraints
   (story-specific — what this story owns and what it must not touch).
-- Every story's stack constraints MUST be copied verbatim from `.ai/architecture.md § Stack Rules`.
+- Every story's stack constraints MUST reference `.ai/architecture.md § Stack Rules`
+  (by stable rule ID when defined, else section heading + one-line summary) —
+  never copy the full block. This avoids duplication and drift.
 - Scope constraints must be precise: name exact directories and files.
 - NEVER write: "don't modify unrelated files" — that is not a constraint, it is noise.
 

@@ -56,16 +56,17 @@ Cline execution constraints live in [`../.clinerules/`](../.clinerules/).
 ## Stack Rules
 
 <!-- TODO: Write the stack rules that executors MUST follow in every task.
-     Copy this block verbatim into every story's ## Constraints section. -->
+     Give each rule a stable ID (SR-NNN) so stories and tasks can reference it
+     by ID instead of copying the rule text. -->
 
-Executor MUST follow these in every task. Copy this block verbatim into
-every story's `## Constraints` section.
+Executor MUST follow these in every task. Stories and tasks reference these
+rules by their stable ID (e.g. SR-001) — they do **not** copy this block.
 
-- <!-- Rule 1: e.g. Next.js 16.2.6 — App Router only, no pages/ directory -->
-- <!-- Rule 2: e.g. Tailwind CSS v4 — token names only, no raw colors or hex values -->
-- <!-- Rule 3: e.g. TypeScript strict mode — no any, no non-null assertion without comment -->
-- <!-- Rule 4: e.g. cn() from @/lib/utils — required for all conditional class merging -->
-- <!-- Rule 5: Add any additional stack constraints -->
+- <!-- SR-001: e.g. Next.js 16.2.6 — App Router only, no pages/ directory -->
+- <!-- SR-002: e.g. Tailwind CSS v4 — token names only, no raw colors or hex values -->
+- <!-- SR-003: e.g. TypeScript strict mode — no any, no non-null assertion without comment -->
+- <!-- SR-004: e.g. cn() from @/lib/utils — required for all conditional class merging -->
+- <!-- SR-005: Add any additional stack constraints -->
 
 ---
 

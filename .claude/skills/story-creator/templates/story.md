@@ -12,7 +12,9 @@
 ## Constraints
 
 **Stack constraints:**
-_(Copy the Stack Rules block verbatim from `.ai/architecture.md § Stack Rules`)_
+- Must comply with `.ai/architecture.md § Stack Rules`.
+- <!-- Relevant rules by ID when defined, e.g. SR-001: <short summary>; else
+       reference the section heading with a one-line summary. Do NOT paste the block. -->
 
 **Scope constraints:**
 - This story owns: <!-- exact files/directories this story controls -->

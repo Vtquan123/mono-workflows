@@ -26,10 +26,17 @@ mono-workflows/
 │       ├── story-creator/                # Skill: requirement → bounded stories (tier-aware)
 │       ├── task-creator/                 # Skill: story → file-scoped tasks
 │       └── quick-task/                   # Skill: direct execution bypass for trivial changes
-└── .clinerules/
-    ├── execution-agent.md                # Cline's role and constraints
-    └── workflows/
-        └── executor.md                  # Cline's 6-phase execution workflow
+└── .clinerules/                          # Persistent, always-on Cline rules (split by concern)
+    ├── 01-role-boundaries.md             # Scoped executor, not architect
+    ├── 02-allowed-files.md               # Write/inspect boundary
+    ├── 03-validation-modes.md            # none / review / scoped / full
+    ├── 04-context-logging.md             # Concise append-only logs
+    ├── 05-safety-destructive-actions.md  # No unrequested delete/rename/deps
+    └── workflows/                        # On-demand procedures (loaded only when invoked)
+        ├── executor.md                   # Main 6-phase execution workflow
+        ├── verifier.md                   # Post-implementation quality gate
+        ├── review-completed-task.md      # Workflow-compliance review
+        └── recover-blocked-task.md       # Safe blocked-task recovery
 ```
 
 ---

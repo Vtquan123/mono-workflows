@@ -24,8 +24,11 @@ MUST NOT write or modify production source code outside `.ai/`.**
 
 Read `.ai/architecture.md § Stack` and `.ai/architecture.md § Stack Rules`.
 
-Every task involving UI files MUST include the applicable rules from
-`.ai/architecture.md § Stack Rules` in the task's `## Requirements` section.
+Every task involving UI files MUST reference the applicable rules from
+`.ai/architecture.md § Stack Rules` in the task's `## Requirements` section —
+by stable rule ID (e.g. SR-003) when defined, otherwise by section heading with
+a one-line summary. Do **not** copy the full Stack Rules block into tasks;
+reference it so updates propagate from the source of truth.
 
 ---
 

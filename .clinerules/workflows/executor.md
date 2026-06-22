@@ -49,6 +49,13 @@ Stop after Phase 6. Do not continue to the next task.
 Skip the story/context loads. Phase 5 appends to
 `.ai/quick-tasks/quick-log.md` instead of `context.md` / `execution-log.md`.
 
+**Read the task's YAML frontmatter first.** It is the machine-readable source for
+`id`, `status`, `validation_mode`, `depends_on`, `allowed_files_count`, and
+`risk`. Use it for routing and pre-flight checks; use the human-readable sections
+(`## Objective`, `## Allowed Files`, `## Requirements`, etc.) as the execution
+guide. If `status: blocked`, do not implement — read the `## Blocker` section and
+go to Failure Handling.
+
 **Only load additional files if the task explicitly names them** in its "Allowed Files" section.
 
 **FORBIDDEN in this phase:**

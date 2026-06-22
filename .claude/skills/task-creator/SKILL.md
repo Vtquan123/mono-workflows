@@ -160,6 +160,23 @@ Write each task as `.ai/stories/STORY-NNN-<slug>/tasks/TASK-NNN-<slug>.md`.
 
 The task slug uses the same rules as story slugs: 3–5 words, lowercase, hyphen-separated, drop articles and prepositions.
 
+Every task file MUST begin with the YAML frontmatter block defined in
+`docs/task-format.md § YAML Frontmatter` — emitted before the markdown title.
+Populate `id`, `story`, `tier` (inherited from the story / tier classification),
+`status`, `validation_mode`, `risk`, `allowed_files_count`, `depends_on`,
+`parallel_group`, and `critical_path`. The frontmatter is the machine-readable
+summary; the markdown sections remain the execution guide.
+
+Enforce the frontmatter consistency rules in
+`docs/task-format.md § Frontmatter consistency rules`:
+`allowed_files_count` equals the `## Allowed Files` count; `depends_on` equals
+the `## Dependencies` upstreams and the `## Dependency Metadata` `depends_on`;
+`validation_mode` equals `## Validation Mode`; `risk` matches the mode and scope;
+`critical_path: true` when another task depends on this one; the block is valid
+YAML. If the task cannot be safely executed, set `status: blocked` and add a
+`## Blocker` section (see `docs/task-format.md § Blocked tasks`); otherwise
+`status: ready`.
+
 Every field in the canonical template (`docs/task-format.md`) is MANDATORY.
 `N/A` is allowed only for genuinely inapplicable sections.
 

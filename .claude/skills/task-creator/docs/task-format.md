@@ -18,9 +18,52 @@ leaf nodes (no deps) get the lowest IDs.
 
 ---
 
+## YAML Frontmatter
+
+Every task file MUST begin with a YAML frontmatter block, before the markdown
+title. It is the machine-readable summary of the task: a top-level header that
+orchestrators, dashboards, dependency-graph tooling, and future CI/linter checks
+read without parsing free-form markdown. It complements — never replaces — the
+human-readable sections below.
+
+```yaml
+---
+id: TASK-NNN                 # required — stable task ID, e.g. TASK-001
+story: STORY-NNN             # required — parent story ID, e.g. STORY-001
+tier: large                  # required — trivial | medium | large | epic
+status: ready                # required — draft | ready | blocked | in_progress | completed | review_failed
+validation_mode: scoped      # required — none | review | scoped | full
+risk: medium                 # required — low | medium | high
+allowed_files_count: 3       # required — MUST equal the count under ## Allowed Files
+depends_on:                  # required — task IDs only; [] if none
+  - TASK-001
+  - TASK-002
+parallel_group: api-surface  # optional — canonical group name, or null
+critical_path: true          # required — boolean; true if downstream tasks depend on this task
+---
+```
+
+The frontmatter MUST be valid YAML. The `---` fences are mandatory and the
+opening fence must be the first line of the file (no leading blank line).
+
+---
+
 ## Canonical Template
 
 ```markdown
+---
+id: TASK-NNN
+story: STORY-NNN
+tier: <trivial|medium|large|epic>
+status: <draft|ready|blocked|in_progress|completed|review_failed>
+validation_mode: <none|review|scoped|full>
+risk: <low|medium|high>
+allowed_files_count: <N>
+depends_on: []
+parallel_group: <canonical-group|null>
+critical_path: <true|false>
+---
+
 # TASK-NNN-<slug> — <Layer> <Entity> <Action>
 
 ## Objective
@@ -140,6 +183,47 @@ following block to `.ai/stories/STORY-NNN-<slug>/context.md` under
 ---
 
 ## Field Rules
+
+### YAML Frontmatter fields
+
+| Field | Required | Allowed values | Meaning |
+|---|---|---|---|
+| `id` | yes | `TASK-NNN` | Stable task ID. Matches the `# TASK-NNN-<slug>` title. |
+| `story` | yes | `STORY-NNN` | Parent story ID. |
+| `tier` | yes | `trivial` \| `medium` \| `large` \| `epic` | Planning tier inherited from the story or task classification (`.ai/planning-tiers.md`). |
+| `status` | yes | `draft` \| `ready` \| `blocked` \| `in_progress` \| `completed` \| `review_failed` | Lifecycle state. Newly generated tasks are `ready`, or `blocked` if not safely executable. |
+| `validation_mode` | yes | `none` \| `review` \| `scoped` \| `full` | MUST equal the `## Validation Mode` section. |
+| `risk` | yes | `low` \| `medium` \| `high` | Based on scope, dependencies, architecture impact, test coverage, and blast radius. |
+| `allowed_files_count` | yes | integer ≥ 0 | MUST equal the number of files listed under `## Allowed Files`. |
+| `depends_on` | yes | list of `TASK-NNN` IDs (`[]` if none) | Task IDs only. MUST match the upstream IDs in `## Dependencies` and the `depends_on` of `## Dependency Metadata`. |
+| `parallel_group` | no | canonical group name (`docs/dependency-graph.md § Group Naming`) or `null` | Group for parallel execution; `null` if not applicable. MUST match `## Dependency Metadata`. |
+| `critical_path` | yes | `true` \| `false` | `true` if downstream tasks depend on this task or it blocks the main story path. MUST match `## Dependency Metadata`. |
+
+The frontmatter is a top-level summary. The richer DAG fields (`soft_deps`,
+`blocked_by`, `parallelizable`, `resource_conflicts`, `relationship_notes`) stay
+in `## Dependency Metadata`, which remains authoritative for those.
+
+#### Frontmatter consistency rules (MUST hold)
+
+1. `allowed_files_count` equals the number of entries under `## Allowed Files`.
+2. `depends_on` equals the upstream task IDs in `## Dependencies` (and `## Dependency Metadata`'s `depends_on`).
+3. `validation_mode` equals the `## Validation Mode` section.
+4. `risk` is consistent with `validation_mode` and scope — `full` validation or
+   high blast radius implies `risk: medium`/`high`; a localized `review`/`none`
+   task is normally `risk: low`.
+5. `status: ready` MUST NOT be used if required dependencies are incomplete or
+   architecture context is missing — use `status: blocked` instead.
+6. `critical_path: true` whenever another task lists this task in its `depends_on`.
+7. `parallel_group` and `critical_path` match `## Dependency Metadata`.
+8. The frontmatter parses as valid YAML.
+
+#### Blocked tasks
+
+If a task cannot safely be executed by Cline, set `status: blocked` in the
+frontmatter and add a `## Blocker` section (immediately after `## Objective`)
+explaining the cause — one or more of: missing context, unclear acceptance
+criteria, missing allowed files, dependency conflict, architecture ambiguity,
+validation uncertainty. Do not emit `status: ready` for such a task.
 
 ### `# TASK-NNN-<slug> — <title>`
 
